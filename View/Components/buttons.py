@@ -7,6 +7,7 @@ def toggle_buttons(button):
     else:
         button.config(text='Start', bg='green')
         
+        
 
 def create_buttons(parent):
     buttons = []
