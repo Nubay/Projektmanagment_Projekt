@@ -10,6 +10,7 @@ import json
 import os
 from datetime import datetime
 from typing import List, Tuple
+from Controller.controller import GPSController
 
 
 
@@ -46,9 +47,8 @@ def save_value_daily(value, directory="JsonDateinTage"):
 
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-gps_daten = [(2.5200, 13.4050), (84.8566, 2.3522), (55.1657, 180.4515)]
 
-save_value_daily(berechne_gps_mittelwert(gps_daten))
+
 
 
 
@@ -70,17 +70,23 @@ class GPSBackendSignalMessung :
                     return (lat, lon , time_gps)
                 
     def starte_messung(self):
+        messungen = []
         while not self.stoppe_messung:
             lat, lon, time_gps = self.empfange_gps_daten()
             timestamp = datetime.now().isoformat()
 
 
             self.daten.append({
-                "zeitpunkt": timestamp,
-                "latitude": lat,
-                "longitude": lon,
-                "time_gps": time_gps
+                timestamp,
+                lat,
+                lon,
+                time_gps
             })
+
+
+            messungen.append(self.daten[1],self.daten[2])
+            if len(messungen) == 2:
+                return messungen
 
             time.sleep(30)
 
@@ -91,4 +97,9 @@ class GPSBackendSignalMessung :
     def gib_daten(self):
         return self.daten
 
+    def StartMessung(self):
+        while 1:
+            gps_daten=self.starte_messung(self); 
+            GPSController.submit_data(berechne_gps_mittelwert(gps_daten)); 
+            save_value_daily(berechne_gps_mittelwert(gps_daten))
 
