@@ -54,7 +54,7 @@ def save_value_daily(value, directory="JsonDateinTage"):
 
 
 class GPSBackendSignalMessung :
-    def __init__(self):
+    def __init__(self, ):
         self.stoppe_messung = False 
         self.session = gps(mode=WATCH_ENABLE | WATCH_NEWSTYLE)
         self.daten = []
