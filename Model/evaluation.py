@@ -99,7 +99,7 @@ class GPSBackendSignalMessung :
 
     def StartMessung(self):
         while 1:
-            gps_daten=self.starte_messung(self); 
+            gps_daten=self.starte_messung(); 
             GPSController.submit_data(berechne_gps_mittelwert(gps_daten)); 
             save_value_daily(berechne_gps_mittelwert(gps_daten))
 

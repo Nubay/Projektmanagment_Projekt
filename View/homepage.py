@@ -65,7 +65,7 @@ class HomePage(tk.Frame):
     def start_stop_action(self, button):
         toggle_buttons(button)
         if button["text"] == "Stop":
-            self.evaluation.StartMessung()
+            self.evaluation.StartMessung
 
 
 
