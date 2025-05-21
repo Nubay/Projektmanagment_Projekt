@@ -2,13 +2,15 @@ import tkinter as tk
 from tkinter import *
 from View.Components.buttons import create_buttons, toggle_buttons
 from Model.evaluation import GPSBackendSignalMessung
+import threading
+from Controller.controller import GPSController
 
 
 class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.evaluation = GPSBackendSignalMessung()
-
+        self.controller = GPSController(self)
 
 
         #Aufteilung Seite in 2
@@ -67,7 +69,8 @@ class HomePage(tk.Frame):
     def start_stop_action(self, button):
         toggle_buttons(button)
         if button["text"] == "Stop":
-            self.evaluation.StartMessung
+            threading.Thread(target=self.evaluation.StartMessung, daemon=True).start()
+
 
 
 

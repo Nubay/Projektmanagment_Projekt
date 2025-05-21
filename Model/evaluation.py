@@ -77,14 +77,15 @@ class GPSBackendSignalMessung :
 
 
             self.daten.append({
-                timestamp,
-                lat,
-                lon,
-                time_gps
+                "timestamp": timestamp,
+                "lat": lat,
+                "lon": lon,
+                "time_gps": time_gps
             })
 
 
-            messungen.append(self.daten[1],self.daten[2])
+            messungen.append((lat, lon))
+
             
             if len(messungen) == 2:
                 return messungen
@@ -101,7 +102,6 @@ class GPSBackendSignalMessung :
     def StartMessung(self):
         while 1:
             gps_daten=self.starte_messung(); 
-            gps_daten_mittelwert=berechne_gps_mittelwert(gps_daten)
-            GPSController.submit_data(berechne_gps_mittelwert(gps_daten_mittelwert)); 
-            save_value_daily(berechne_gps_mittelwert(gps_daten_mittelwert))
+            GPSController.submit_data(berechne_gps_mittelwert(gps_daten)); 
+            save_value_daily(berechne_gps_mittelwert(gps_daten))
 

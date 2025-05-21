@@ -2,10 +2,9 @@ from typing import Tuple
 
 
 class GPSController:
-    
+    def __init__(self, homepage_ref):
+        self.homepage = homepage_ref
+
     def submit_data(self, daten: Tuple[float, float]):
-        from View.homepage import HomePage
-        self.homepage = HomePage(self)
-        gps_data = daten
-        self.homepage.show_gps_data(gps_data)
+        self.homepage.show_gps_data(f"Lat: {daten[0]:.5f}, Lon: {daten[1]:.5f}")
 
