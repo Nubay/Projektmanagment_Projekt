@@ -54,10 +54,12 @@ def save_value_daily(value, directory="JsonDateinTage"):
 
 
 class GPSBackendSignalMessung :
-    def __init__(self, ):
+    def __init__(self, controller):
         self.stoppe_messung = False 
         self.session = gps(mode=WATCH_ENABLE | WATCH_NEWSTYLE)
         self.daten = []
+        self.controller = controller
+
 
     def empfange_gps_daten(self):
         while True:
@@ -102,6 +104,6 @@ class GPSBackendSignalMessung :
     def StartMessung(self):
         while 1:
             gps_daten=self.starte_messung(); 
-            GPSController.submit_data(berechne_gps_mittelwert(gps_daten)); 
+            self.controller.submit_data(berechne_gps_mittelwert(gps_daten)) 
             save_value_daily(berechne_gps_mittelwert(gps_daten))
 
