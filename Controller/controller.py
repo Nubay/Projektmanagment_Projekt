@@ -8,5 +8,6 @@ class GPSController:
     def submit_data(self, daten: Tuple[float, float]):
         gps_data = daten
         self.homepage.show_gps_data(gps_data)
-
+        gps_data2 = '12    34'
+        self.homepage.show_gps_data(gps_data2)
 
