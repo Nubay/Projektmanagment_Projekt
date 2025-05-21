@@ -9,7 +9,7 @@ from Controller.controller import GPSController
 class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
-        self.evaluation = GPSBackendSignalMessung()
+        self.evaluation = GPSBackendSignalMessung(self)
         self.controller = GPSController(self)
 
 
