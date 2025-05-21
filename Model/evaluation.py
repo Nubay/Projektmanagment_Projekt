@@ -76,15 +76,15 @@ class GPSBackendSignalMessung :
             timestamp = datetime.now().isoformat()
 
 
-            self.daten.append({
-                timestamp,
-                lat,
-                lon,
-                time_gps
-            })
+            daten={
+                "timestamp": timestamp,
+                "lat": lat,
+                "lon": lon,
+                "time": time_gps
+            }
+            self.daten.append(daten)
 
-
-            messungen.append(self.daten[1],self.daten[2])
+            
             if len(messungen) == 2:
                 return messungen
 
