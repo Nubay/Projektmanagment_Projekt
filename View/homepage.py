@@ -71,9 +71,8 @@ class HomePage(tk.Frame):
         toggle_buttons(button)
         if button["text"] == "Stop":
             threading.Thread(target=self.evaluation.StartMessung, daemon=True).start()
-
-
-
+        else:
+            self.evaluation.stoppen()
 
 
 

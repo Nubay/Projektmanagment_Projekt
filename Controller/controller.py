@@ -6,5 +6,8 @@ class GPSController:
         self.homepage = homepage
 
     def submit_data(self, daten: Tuple[float, float]):
-        self.homepage.show_gps_data(f"Lat: {daten[0]:.5f}, Lon: {daten[1]:.5f}")
-        self.homepage.show_gps_data( '13345666432211 r')
+        print("→ submit_data wurde aufgerufen")
+        def update_ui():
+            print("→ update_ui wird aufgerufen")
+            self.homepage.show_gps_data(f"Längengrad: {daten[0]:.5f}, Breitengrad: {daten[1]:.5f}")
+        self.homepage.after(0, update_ui)

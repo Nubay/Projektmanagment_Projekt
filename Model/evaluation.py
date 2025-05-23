@@ -61,6 +61,18 @@ class GPSBackendSignalMessung :
         self.controller = controller
 
 
+
+        # Dummy GPS Daten
+    # def empfange_gps_daten(self):
+    #     import random
+    #     lat = 52.52 + random.uniform(-0.01, 0.01)
+    #     lon = 13.405 + random.uniform(-0.01, 0.01)
+    #     time_gps = datetime.now().isoformat()
+    #     print("[DEBUG] Dummy GPS-Daten empfangen")
+    #     return (lat, lon, time_gps)
+    
+
+        # GPS Daten mit Modul
     def empfange_gps_daten(self):
         while True:
             report = self.session.next()
@@ -70,6 +82,8 @@ class GPSBackendSignalMessung :
                 time_gps = getattr(report, 'time', None)
                 if lat is not None and lon is not None:
                     return (lat, lon , time_gps)
+
+
                 
     def starte_messung(self):
         messungen = []
@@ -80,19 +94,19 @@ class GPSBackendSignalMessung :
 
             self.daten.append({
                 "timestamp": timestamp,
-                "lat": lat,
                 "lon": lon,
+                "lat": lat,
                 "time_gps": time_gps
             })
 
 
-            messungen.append((lat, lon))
+            messungen.append((lon, lat))
 
             
             if len(messungen) == 2:
                 return messungen
 
-            time.sleep(30)
+            time.sleep(2)
 
 
     def stoppen(self):
@@ -103,7 +117,7 @@ class GPSBackendSignalMessung :
 
     def StartMessung(self):
         while 1:
-            gps_daten=self.starte_messung(); 
-            self.controller.submit_data(berechne_gps_mittelwert(gps_daten)) 
+            gps_daten = self.starte_messung()
+            self.controller.submit_data(berechne_gps_mittelwert(gps_daten))
             save_value_daily(berechne_gps_mittelwert(gps_daten))
 
