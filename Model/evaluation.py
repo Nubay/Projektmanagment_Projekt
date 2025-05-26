@@ -2,7 +2,7 @@
 # funktioniert aber auf dem Raspberry Pi nach Installation von 'python3-gps'
 #(sudo apt install gpsd gpsd-clients python3-gps)
 
-from gps import gps, WATCH_ENABLE, WATCH_NEWSTYLE 
+# from gps import gps, WATCH_ENABLE, WATCH_NEWSTYLE 
 import time
 from datetime import datetime 
 
@@ -28,7 +28,7 @@ def berechne_gps_mittelwert(gps_daten: List[Tuple[float, float]]) -> Tuple[float
     return (mittelwert_breite, mittelwert_laenge)
 
 
-def save_value_daily(value, directory="JsonDateinTage"):
+def save_value_daily(value, directory=os.path.join("Model", "JsonDateinTage")):
     today = datetime.now().strftime("%Y-%m-%d")
     filename = os.path.join(directory, f"{today}.json")
     
@@ -50,25 +50,37 @@ def save_value_daily(value, directory="JsonDateinTage"):
 
 
 
-
-
-
 class GPSBackendSignalMessung :
-    def __init__(self):
+    def __init__(self, controller):
         self.stoppe_messung = False 
-        self.session = gps(mode=WATCH_ENABLE | WATCH_NEWSTYLE)
+        # self.session = gps(mode=WATCH_ENABLE | WATCH_NEWSTYLE)
         self.daten = []
+        self.controller = controller
 
-    def empfange_gps_daten(self):
-        while True:
-            report = self.session.next()
-            if report['class'] == 'TPV':
-                lat = getattr(report, 'lat', None)
-                lon = getattr(report, 'lon', None)
-                time_gps = getattr(report, 'time', None)
-                if lat is not None and lon is not None:
-                    return (lat, lon , time_gps)
+
+        #GPS Daten mit Modul
+    # def empfange_gps_daten(self):
+    #     while True:
+    #         report = self.session.next()
+    #         if report['class'] == 'TPV':
+    #             lat = getattr(report, 'lat', None)
+    #             lon = getattr(report, 'lon', None)
+    #             time_gps = getattr(report, 'time', None)
+    #             if lat is not None and lon is not None:
+    #                 return (lat, lon , time_gps)
                 
+
+
+        # Dummy GPS Daten
+    def empfange_gps_daten(self):
+        import random
+        lat = 80 + random.uniform(-10.5, 10.5)
+        lon = 40 + random.uniform(-5.5, 5.5)
+        time_gps = datetime.now().isoformat()
+        return (lat, lon, time_gps)
+
+
+
     def starte_messung(self):
         messungen = []
         while not self.stoppe_messung:
@@ -77,18 +89,18 @@ class GPSBackendSignalMessung :
 
 
             self.daten.append({
-                timestamp,
-                lat,
-                lon,
-                time_gps
+                "lat": lat,
+                "lon": lon,
+                "time_gps": time_gps,
+                "timestamp": timestamp
             })
 
 
-            messungen.append(self.daten[1],self.daten[2])
+            messungen.append((lat, lon))
             if len(messungen) == 2:
                 return messungen
 
-            time.sleep(30)
+            time.sleep(2)
 
 
     def stoppen(self):
@@ -99,7 +111,7 @@ class GPSBackendSignalMessung :
 
     def StartMessung(self):
         while 1:
-            gps_daten=self.starte_messung(self); 
-            GPSController.submit_data(berechne_gps_mittelwert(gps_daten)); 
+            gps_daten = self.starte_messung()
+            self.controller.submit_data(berechne_gps_mittelwert(gps_daten))
             save_value_daily(berechne_gps_mittelwert(gps_daten))
 
