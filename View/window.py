@@ -5,7 +5,8 @@ class Main_Window(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Navigationssystem")
-        self.attributes("-fullscreen", True)
+        self.overrideredirect(True)
+        self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()}+0+0")
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
