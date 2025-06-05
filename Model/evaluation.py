@@ -30,7 +30,7 @@ def berechne_gps_mittelwert(gps_daten: List[Tuple[float, float]]) -> Tuple[float
     return (mittelwert_breite, mittelwert_laenge)
 
 
-def save_value_daily(value, directory="JsonDateinTage"):
+def save_value_daily(value, directory=os.path.join("Model", "JsonDateinTage")):
     today = datetime.now().strftime("%Y-%m-%d")
     filename = os.path.join(directory, f"{today}.json")
     
@@ -57,35 +57,53 @@ save_value_daily(berechne_gps_mittelwert(gps_daten))
 
 
 class GPSBackendSignalMessung :
-    def __init__(self):
+    def __init__(self, controller):
         self.stoppe_messung = False 
-        self.session = gps(mode=WATCH_ENABLE | WATCH_NEWSTYLE)
+        #self.session = gps(mode=WATCH_ENABLE | WATCH_NEWSTYLE)
         self.daten = []
 
+        #GPS Daten mit Modul
+    # def empfange_gps_daten(self):
+    #     while True:
+    #         report = self.session.next()
+    #         if report['class'] == 'TPV':
+    #             lat = getattr(report, 'lat', None)
+    #             lon = getattr(report, 'lon', None)
+    #             time_gps = getattr(report, 'time', None)
+    #             if lat is not None and lon is not None:
+    #                 return (lat, lon , time_gps)
+
+
+
+        # Dummy GPS Daten
     def empfange_gps_daten(self):
-        while True:
-            report = self.session.next()
-            if report['class'] == 'TPV':
-                lat = getattr(report, 'lat', None)
-                lon = getattr(report, 'lon', None)
-                time_gps = getattr(report, 'time', None)
-                if lat is not None and lon is not None:
-                    return (lat, lon , time_gps)
+        import random
+        lat = 80 + random.uniform(-10.5, 10.5)
+        lon = 40 + random.uniform(-5.5, 5.5)
+        time_gps = datetime.now().isoformat()
+        return (lat, lon, time_gps)
+
+
                 
     def starte_messung(self):
+        messungen = []
         while not self.stoppe_messung:
             lat, lon, time_gps = self.empfange_gps_daten()
             timestamp = datetime.now().isoformat()
 
 
             self.daten.append({
-                 timestamp,
-                 lat,
-                 lon,
-                 time_gps
+                "lat": lat,
+                "lon": lon,
+                "time_gps": time_gps,
+                "timestamp": timestamp
             })
 
-            time.sleep(30)
+            messungen.append((lat, lon))
+            if len(messungen) == 2:
+                return messungen
+
+            time.sleep(2)
 
 
     def stoppen(self):
@@ -96,7 +114,10 @@ class GPSBackendSignalMessung :
     
     def StartMessung(self):
         while 1:
-            gps_daten=self.starte_messung(self); GPSController.submit_data(berechne_gps_mittelwert(gps_daten)); save_value_daily(berechne_gps_mittelwert(gps_daten))
+            gps_daten = self.starte_messung()
+            self.controller.submit_data(berechne_gps_mittelwert(gps_daten))
+            save_value_daily(berechne_gps_mittelwert(gps_daten))
+
 
 def exportiere_gruppiert_nach_dateiname(quellordner='JsonDateinTage', export_dateiname='vereint.json'):
     gesammelte_daten = {}
