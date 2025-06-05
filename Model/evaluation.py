@@ -119,33 +119,37 @@ class GPSBackendSignalMessung :
             save_value_daily(berechne_gps_mittelwert(gps_daten))
 
 
-def exportiere_gruppiert_nach_dateiname(quellordner='JsonDateinTage', export_dateiname='vereint.json'):
-    gesammelte_daten = {}
+    @staticmethod
+    def exportiere_gruppiert_nach_dateiname(export_dateiname='vereint.json'):
+        base_dir = os.path.dirname(os.path.abspath(__file__)) 
+        quellordner = os.path.join(base_dir, 'JsonDateinTage')
+        gesammelte_daten = {}
 
-    # 1. Alle JSON-Dateien einlesen und unter ihrem Dateinamen speichern
-    for dateiname in os.listdir(quellordner):
-        if dateiname.endswith('.json'):
-            pfad = os.path.join(quellordner, dateiname)
-            with open(pfad, 'r', encoding='utf-8') as f:
-                try:
-                    daten = json.load(f)
-                    if isinstance(daten, list):
-                        gesammelte_daten[dateiname] = daten
-                except json.JSONDecodeError:
-                    print(f"Fehler beim Laden von {pfad}")
+        # 1. Alle JSON-Dateien einlesen und unter ihrem Dateinamen speichern
+        for dateiname in os.listdir(quellordner):
+            if dateiname.endswith('.json'):
+                pfad = os.path.join(quellordner, dateiname)
+                with open(pfad, 'r', encoding='utf-8') as f:
+                    try:
+                        daten = json.load(f)
+                        if isinstance(daten, list):
+                            gesammelte_daten[dateiname] = daten
+                    except json.JSONDecodeError:
+                        print(f"Fehler beim Laden von {pfad}")
 
-    # 2. USB-Stick-Pfad suchen
-    usb_pfad = finde_usb_stick_pfad()
-    if not usb_pfad:
-        print("Kein USB-Stick gefunden.")
-        return
+        # 2. USB-Stick-Pfad suchen
+        usb_pfad = finde_usb_stick_pfad()
+        if not usb_pfad:
+            print("Kein USB-Stick gefunden.")
+            return
 
-    export_pfad = os.path.join(usb_pfad, export_dateiname)
+        export_pfad = os.path.join(usb_pfad, export_dateiname)
 
-    # 3. Exportieren
-    with open(export_pfad, 'w', encoding='utf-8') as f:
-        json.dump(gesammelte_daten, f, indent=2)
-    print(f"Daten erfolgreich exportiert nach: {export_pfad}")
+        # 3. Exportieren
+        with open(export_pfad, 'w', encoding='utf-8') as f:
+            json.dump(gesammelte_daten, f, indent=2)
+        print(f"Daten erfolgreich exportiert nach: {export_pfad}")
+
 
 def finde_usb_stick_pfad():
     system = platform.system()

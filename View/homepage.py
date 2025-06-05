@@ -52,16 +52,24 @@ class HomePage(tk.Frame):
         # Buttons erstellen
         buttons = create_buttons(button_frame)
 
-        for i, btn in enumerate(buttons[:-1]):
+        for i, btn in enumerate(buttons):
             btn.grid(row=i, column=0, sticky="nsew", padx=10, pady=5)
 
 
         # Start/Stop-Button
-        start_stop_button = buttons[-1]
-        start_stop_button.config(text="Start", bg="green", 
+        start_stop_button = buttons[3]
+        start_stop_button.config( 
             command=lambda: self.start_stop_action(start_stop_button)
         )
-        start_stop_button.grid(row=len(buttons) - 1, column=0, sticky="nsew", padx=10, pady=5)
+
+        
+        #Exportieren/Button
+        export_button = buttons[1]
+        export_button.config(command=self.exportieren_action)
+
+    
+    def exportieren_action(self):
+        self.evaluation.exportiere_gruppiert_nach_dateiname()
 
 
 
