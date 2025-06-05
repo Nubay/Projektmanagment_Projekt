@@ -2,7 +2,7 @@
 # funktioniert aber auf dem Raspberry Pi nach Installation von 'python3-gps'
 #(sudo apt install gpsd gpsd-clients python3-gps)
 
-#from gps import gps, WATCH_ENABLE, WATCH_NEWSTYLE 
+# from gps import gps, WATCH_ENABLE, WATCH_NEWSTYLE 
 import time
 from datetime import datetime 
 
@@ -10,7 +10,7 @@ import json
 import os
 from datetime import datetime
 from typing import List, Tuple
-#from Controller.controller import GPSController
+from Controller.controller import GPSController
 import platform
 from pathlib import Path
 
@@ -59,9 +59,9 @@ save_value_daily(berechne_gps_mittelwert(gps_daten))
 class GPSBackendSignalMessung :
     def __init__(self, controller):
         self.stoppe_messung = False 
-        #self.session = gps(mode=WATCH_ENABLE | WATCH_NEWSTYLE)
+        # self.session = gps(mode=WATCH_ENABLE | WATCH_NEWSTYLE)
         self.daten = []
-
+        self.controller = controller
         #GPS Daten mit Modul
     # def empfange_gps_daten(self):
     #     while True:
