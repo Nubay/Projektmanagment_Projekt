@@ -50,6 +50,69 @@ def save_value_daily(value, directory=os.path.join("Model", "JsonDateinTage")):
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
+#Hervorhebung besonderer Orte
+class AufenthaltsortErkennung:
+    def __init__(self):
+        self.letzter_ort = None
+        self.letzte_zeit = None 
+        self.aufenthaltsbeginn = None
+    
+    def entfernung_berechnen(self, coord1, coord2):
+        from math import radians,sin,cos,sqrt,atan2
+        R = 6371000 #Meter
+        lat1, lon1 = radians(coord1[0]),radians(coord1[1])
+        lat2, lon2 = radians(coord2[0]),radians(coord2[1])
+        dlat = lat2 - lat1
+        dlon = lon2 - lon1
+        a = sin(dlat/2)**2 + cos(lat1)*cos(lat2)*sin(dlon/2)**2
+        c = 2 * atan2(sqrt(a), sqrt(1 - a))
+        return R * c
+    
+    def verarbeite_datenpunkt(self,lat,lon,timestamp):
+        import os, json
+        from datetime import datetime, timedelta
+
+        aktuelle_position = (lat,lon)
+        zeitpunkt = datetime.fromisoformat(timestamp)
+
+        if self.letzter_ort is None :
+            self.letzter_ort = aktuelle_position 
+            self.aufenthaltsbeginn = zeitpunkt 
+            return 
+        
+        distanz = self.entfernung_berechnen(self.letzter_ort,aktuelle_position)
+
+        if distanz < 30:
+            if zeitpunkt -self.aufenthaltsbeginn >= timedelta(minutes=15):
+                daten = {
+                     "lat": self.letzter_ort[0],
+                    "lon": self.letzter_ort[1],
+                    "von": self.aufenthaltsbeginn.isoformat(),
+                    "bis": zeitpunkt.isoformat(),
+                    "name": None,
+                    "farbe": "braun"
+
+                }
+
+                #pfad = os.path.join("Model", "Aufenthaltsorte")
+                #os.makedirs(pfad, exist_ok=True)
+                #datei = os.path.join(pfad, f"{zeitpunkt.date()}.json")
+
+                #if os.path.exists(datei):
+                #    with open(datei, "r", encoding="utf-8") as f:
+                #        vorhandene = json.load(f)
+                #else:
+                #    vorhandene = []
+
+                #vorhandene.append(daten)
+                #with open(datei, "w", encoding="utf-8") as f:
+                #    json.dump(vorhandene, f, indent=2, ensure_ascii=False)
+
+                # Zurücksetzen, damit nicht mehrfach gespeichert wird
+                self.aufenthaltsbeginn = zeitpunkt
+        else:
+            self.letzter_ort = aktuelle_position
+            self.aufenthaltsbeginn = zeitpunkt
 
 
 #Hervorhebung besonderer Orte
@@ -164,6 +227,7 @@ class GPSBackendSignalMessung :
         self.daten = []
         self.controller = controller
         self.aufenthaltserkenner = AufenthaltsortErkennung()
+        self.aufenthaltserkenner = AufenthaltsortErkennung()
         #GPS Daten mit Modul
     # def empfange_gps_daten(self):
     #     while True:
@@ -222,6 +286,7 @@ class GPSBackendSignalMessung :
             gps_daten = self.starte_messung()
             self.controller.submit_data(berechne_gps_mittelwert(gps_daten))
             save_value_daily(berechne_gps_mittelwert(gps_daten))
+
 
 
     @staticmethod
