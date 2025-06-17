@@ -11,8 +11,8 @@ def toggle_buttons(button):
 
 def create_buttons(parent):
     buttons = []
-    btn_texts = ["Einstellung", "Exportieren", "Datum", "Start"]
-    colors = ["gray", "gray", "gray", "green"]
+    btn_texts = ["Einstellung", "Routen" , "Standorte", "Exportieren", "Start"]
+    colors = ["gray", "gray", "gray", "gray", "green"]
 
     for text, color in zip(btn_texts, colors):
         btn = tk.Button(parent, text=text, bg=color, fg="white", font=("Arial", 16))
