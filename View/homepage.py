@@ -10,12 +10,13 @@ class HomePage(tk.Frame):
         super().__init__(parent)
         self.controller = GPSController(self)
         self.evaluation = GPSBackendSignalMessung(self.controller)
-
+        self.gui_controller = controller
 
         #Aufteilung Seite in 2
         self.columnconfigure(0, weight=6)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
+
 
         #Aufteilung Linke Seite
         left_frame = tk.Frame(self, bg="white")
@@ -44,7 +45,7 @@ class HomePage(tk.Frame):
         button_frame = tk.Frame(self, bg="lightgray")
         button_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
 
-        for i in range(4):
+        for i in range(5):
             button_frame.rowconfigure(i, weight=1)
         button_frame.columnconfigure(0, weight=1)
 
@@ -57,14 +58,25 @@ class HomePage(tk.Frame):
 
 
         # Start/Stop-Button
-        start_stop_button = buttons[3]
+        start_stop_button = buttons[4]
         start_stop_button.config( 
             command=lambda: self.start_stop_action(start_stop_button)
         )
 
+
+        # Routen Button
+        routen_button = buttons[1]
+        routen_button.config(command=lambda: self.gui_controller.show_page("RoutenPage"))
+
+
+
+        # Standort Button
+        standort_button = buttons[2]
+        standort_button.config(command=lambda: self.gui_controller.show_page("StandortPage"))
+
         
         #Exportieren/Button
-        export_button = buttons[1]
+        export_button = buttons[3]
         export_button.config(command=self.exportieren_action)
 
     

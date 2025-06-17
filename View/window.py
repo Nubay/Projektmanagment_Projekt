@@ -1,9 +1,12 @@
 import tkinter as tk
 from View.homepage import HomePage
+from View.routen import RoutenPage
+from View.standort import StandortPage
 
 class Main_Window(tk.Tk):
     def __init__(self):
         super().__init__()
+        self.active_pages = {}
         self.title("Navigationssystem")
         self.overrideredirect(True)
         self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()}+0+0")
@@ -18,12 +21,23 @@ class Main_Window(tk.Tk):
         self.container.rowconfigure(0, weight=1)
 
 
-        self.pages = {}
-        self.show_page(HomePage)
+        self.pages = {
+            "HomePage": HomePage,
+            "RoutenPage": RoutenPage,
+            "StandortPage": StandortPage,
+        }
+        self.show_page("HomePage")
 
-    def show_page(self, PageClass):
+    
+
+    def show_page(self, page_name):
         for child in self.container.winfo_children():
             child.destroy()
 
-        page = PageClass(self.container, self)
+        # Immer neu erstellen
+        page_class = self.pages[page_name]
+        page = page_class(self.container, self)
+        self.active_pages[page_name] = page
+
+
         page.grid(row=0, column=0, sticky="nsew")
