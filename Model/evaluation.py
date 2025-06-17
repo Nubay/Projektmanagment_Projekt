@@ -49,9 +49,7 @@ def save_value_daily(value, directory=os.path.join("Model", "JsonDateinTage")):
 
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-gps_daten = [(2.5200, 13.4050), (84.8566, 2.3522), (55.1657, 180.4515)]
 
-save_value_daily(berechne_gps_mittelwert(gps_daten))
 
 
 
