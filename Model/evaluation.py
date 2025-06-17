@@ -80,40 +80,55 @@ class AufenthaltsortErkennung:
         zeitpunkt = datetime.fromisoformat(timestamp)
 
         if self.letzter_ort is None :
+            print("[Init] Erster Ort gespeichert:", aktuelle_position)
             self.letzter_ort = aktuelle_position 
             self.aufenthaltsbeginn = zeitpunkt 
             return 
         
         distanz = self.entfernung_berechnen(self.letzter_ort,aktuelle_position)
+        print(f"[Debug] Distanz: {distanz:.4f} Meter")
 
-        if distanz < 30:
-            if zeitpunkt -self.aufenthaltsbeginn >= timedelta(minutes=15):
+        if distanz < 50:
+            print("[Debug] Distanz unter 50 m")
+            if zeitpunkt -self.aufenthaltsbeginn >= timedelta(minutes=2):
+                print("[Debug] Aufenthaltsdauer erfüllt")
                 daten = {
-                     "lat": self.letzter_ort[0],
+                    "lat": self.letzter_ort[0],
                     "lon": self.letzter_ort[1],
-                    "von": self.aufenthaltsbeginn.isoformat(),
-                    "bis": zeitpunkt.isoformat(),
-                    "name": None,
+                    "name": "Neuer Ort",
                     "farbe": "braun"
 
                 }
 
-                #pfad = os.path.join("Model", "Aufenthaltsorte")
-                #os.makedirs(pfad, exist_ok=True)
-                #datei = os.path.join(pfad, f"{zeitpunkt.date()}.json")
+                pfad = os.path.join("Model", "JsonDateinTage")
+                datei = os.path.join(pfad, f"{zeitpunkt.date()}.json")
 
-                #if os.path.exists(datei):
-                #    with open(datei, "r", encoding="utf-8") as f:
-                #        vorhandene = json.load(f)
-                #else:
-                #    vorhandene = []
+                if os.path.exists(datei):
+                    with open(datei, "r", encoding="utf-8") as f:
+                        try:
+                             daten_liste = json.load(f)
+                        except json.JSONDecodeError:
+                             daten_liste = []
 
-                #vorhandene.append(daten)
-                #with open(datei, "w", encoding="utf-8") as f:
-                #    json.dump(vorhandene, f, indent=2, ensure_ascii=False)
+                else:
+                     daten_liste = []
 
+                 #Besonderer Ort hinzufügen 
+                daten_liste.append(daten)
+
+                with open (datei, "w", encoding="utf-8") as f:
+                     json.dump(daten_liste, f, ensure_ascii=False, indent=2)
+                
+                print("Besonderer Ort gespeichert:", daten)
+
+                   
                 # Zurücksetzen, damit nicht mehrfach gespeichert wird
                 self.aufenthaltsbeginn = zeitpunkt
+            else:
+             verbleibend = timedelta(minutes=2) - (zeitpunkt - self.aufenthaltsbeginn)
+             print(f"[Debug] Noch nicht lang genug an einem Ort, verbleibend: {verbleibend}")
+            
+    
         else:
             self.letzter_ort = aktuelle_position
             self.aufenthaltsbeginn = zeitpunkt
@@ -144,8 +159,8 @@ class GPSBackendSignalMessung :
         # Dummy GPS Daten
     def empfange_gps_daten(self):
         import random
-        lat = 80 + random.uniform(-10.5, 10.5)
-        lon = 40 + random.uniform(-5.5, 5.5)
+        lat = 80 + random.uniform(-0.0001, 0.0001)
+        lon = 40 + random.uniform(-0.0001, 0.0001)
         time_gps = datetime.now().isoformat()
         return (lat, lon, time_gps)
 
