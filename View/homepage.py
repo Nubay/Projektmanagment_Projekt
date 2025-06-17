@@ -9,8 +9,9 @@ from View.settings_page import SettingsPage
 class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
-        self.controller = GPSController(self)
-        self.evaluation = GPSBackendSignalMessung(self.controller)
+        self.gps_controller = GPSController(self)
+        self.root_controller = controller
+        self.evaluation = GPSBackendSignalMessung(self.gps_controller)
         self.gui_controller = controller
         # Aufteilung der Seite
         self.columnconfigure(0, weight=6)
@@ -32,7 +33,7 @@ class HomePage(tk.Frame):
         self.textfield.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
 
         # Quit-Button
-        quit_button = tk.Button(self, text="Quit", width=10, height=2, bg="red", fg="white", command=controller.destroy)
+        quit_button = tk.Button(self, text="Quit", width=10, height=2, bg="red", fg="white", command=self.root_controller.destroy)
         quit_button.place(x=10, y=10)
 
         # Rechter Bereich (Buttons)
@@ -46,10 +47,10 @@ class HomePage(tk.Frame):
         # Buttons erzeugen
         buttons = create_buttons(button_frame)
 
-        # "Einstellungen"-Button mit Funktion
+        # "Einstellungen"-Button 
         buttons[0].config(command=self.öffne_einstellungen)
 
-        # "Start"-Button mit Logik
+        # "Start"-Button 
         buttons[-1].config(command=lambda: self.start_stop_action(buttons[-1]))
 
         # Alle Buttons anzeigen
@@ -59,7 +60,8 @@ class HomePage(tk.Frame):
     def öffne_einstellungen(self):
         fenster = tk.Toplevel(self)
         fenster.title("Einstellungen")
-        fenster.geometry("600x400")
+        fenster.state("zoomed")       # Große Fläche
+        fenster.resizable(False, False)
         seite = SettingsPage(fenster)
         seite.pack(expand=True, fill="both")
 

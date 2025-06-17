@@ -1,7 +1,5 @@
 import tkinter as tk
 from tkinter import messagebox
-from View.daygrid_page import DayGridPage
-from View.overview_page import OverviewPage
 from Controller.passwort_controller import speichere_passwort
 
 class SettingsPage(tk.Frame):
@@ -11,30 +9,21 @@ class SettingsPage(tk.Frame):
         self.grid_rowconfigure((0, 1), weight=1)
         self.grid_columnconfigure((0, 1), weight=1)
 
-        tk.Button(self, text="Automatikmodus").grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
-        tk.Button(self, text="Passwort ändern", command=self.open_passwort_fenster).grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
-        tk.Button(self, text="Tagesauswahl", command=self.open_day_grid).grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
-        tk.Button(self, text="Übersicht anzeigen", command=self.zeige_übersicht).grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
-
-    def open_day_grid(self):
-        DayGridPage()
-
-    def zeige_übersicht(self):
-        fenster = tk.Toplevel(self)
-        fenster.title("Übersicht")
-        page = OverviewPage(fenster)
-        page.pack(expand=True, fill="both")
+        # Automatikmodus & Passwort ändern mit größerer Schrift
+        tk.Button(self, text="Automatikmodus", font=("Arial", 20)).grid(row=0, column=0, columnspan=2, sticky="nsew", padx=20, pady=20)
+        tk.Button(self, text="Passwort ändern", command=self.open_passwort_fenster, font=("Arial", 20)).grid(row=1, column=0, columnspan=2, sticky="nsew", padx=10, pady=10)
 
     def open_passwort_fenster(self):
         fenster = tk.Toplevel(self)
         fenster.title("Passwort ändern")
-        fenster.geometry("400x150")
+        fenster.state("zoomed") 
+        fenster.resizable(False, False)
 
-        label = tk.Label(fenster, text="Neues Passwort (min. 6 Zeichen):")
-        label.pack(pady=10)
+        label = tk.Label(fenster, text="Neues Passwort (min. 6 Zeichen):", font=("Arial", 20))
+        label.pack(pady=30)
 
-        entry = tk.Entry(fenster, show="*", width=30)
-        entry.pack(pady=5)
+        entry = tk.Entry(fenster, show="*", font=("Arial", 20), width=30)
+        entry.pack(pady=10)
 
         def speichern():
             passwort = entry.get()
@@ -45,5 +34,13 @@ class SettingsPage(tk.Frame):
             messagebox.showinfo("Erfolg", "Passwort gespeichert!")
             fenster.destroy()
 
-        speichern_btn = tk.Button(fenster, text="Speichern", command=speichern)
-        speichern_btn.pack(pady=10)
+        speichern_btn = tk.Button(fenster, text="Speichern", command=speichern, font=("Arial", 18), width=20, height=2)
+        speichern_btn.pack(pady=30)
+
+
+
+
+
+
+
+
