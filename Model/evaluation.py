@@ -86,18 +86,17 @@ class AufenthaltsortErkennung:
         zeitpunkt = datetime.fromisoformat(timestamp)
 
         if self.letzter_ort is None :
-            print("[Init] Erster Ort gespeichert:", aktuelle_position)
             self.letzter_ort = aktuelle_position 
             self.aufenthaltsbeginn = zeitpunkt 
             return 
         
         distanz = self.entfernung_berechnen(self.letzter_ort,aktuelle_position)
-        print(f"[Debug] Distanz: {distanz:.4f} Meter")
+        
 
         if distanz < 50:
-            print("[Debug] Distanz unter 50 m")
+            
             if zeitpunkt -self.aufenthaltsbeginn >= timedelta(minutes=2):
-                print("[Debug] Aufenthaltsdauer erfüllt")
+                
                 daten = {
                     "lat": self.letzter_ort[0],
                     "lat": self.letzter_ort[0],
@@ -135,14 +134,14 @@ class AufenthaltsortErkennung:
                 with open (datei, "w", encoding="utf-8") as f:
                      json.dump(daten_liste, f, ensure_ascii=False, indent=2)
                 
-                print("Besonderer Ort gespeichert:", daten)
+                
 
                    
                 # Zurücksetzen, damit nicht mehrfach gespeichert wird
                 self.aufenthaltsbeginn = zeitpunkt
             else:
              verbleibend = timedelta(minutes=2) - (zeitpunkt - self.aufenthaltsbeginn)
-             print(f"[Debug] Noch nicht lang genug an einem Ort, verbleibend: {verbleibend}")
+             
             
     
             
