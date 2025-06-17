@@ -86,28 +86,39 @@ class AufenthaltsortErkennung:
         zeitpunkt = datetime.fromisoformat(timestamp)
 
         if self.letzter_ort is None :
+            print("[Init] Erster Ort gespeichert:", aktuelle_position)
             self.letzter_ort = aktuelle_position 
             self.aufenthaltsbeginn = zeitpunkt 
             return 
         
         distanz = self.entfernung_berechnen(self.letzter_ort,aktuelle_position)
-        
+        print(f"[Debug] Distanz: {distanz:.4f} Meter")
 
         if distanz < 50:
-            
-            if zeitpunkt -self.aufenthaltsbeginn >= timedelta(minutes=15):
-                
+            print("[Debug] Distanz unter 50 m")
+            if zeitpunkt -self.aufenthaltsbeginn >= timedelta(minutes=2):
+                print("[Debug] Aufenthaltsdauer erfüllt")
                 daten = {
+                    "lat": self.letzter_ort[0],
                     "lat": self.letzter_ort[0],
                     "lon": self.letzter_ort[1],
                     "name": "Neuer Ort",
+                    "farbe": "braun"
 
                 }
 
-                pfad = os.path.join("Model", "JSONBesondereOrte")
-                
-                datei = os.path.join(pfad,"besondere_orte.json")
+                pfad = os.path.join("Model", "JsonDateinTage")
+                datei = os.path.join(pfad, f"{zeitpunkt.date()}.json")
 
+                if os.path.exists(datei):
+                    with open(datei, "r", encoding="utf-8") as f:
+                        try:
+                             daten_liste = json.load(f)
+                        except json.JSONDecodeError:
+                             daten_liste = []
+
+                else:
+                     daten_liste = []
                 if os.path.exists(datei):
                     with open(datei, "r", encoding="utf-8") as f:
                         try:
@@ -124,11 +135,16 @@ class AufenthaltsortErkennung:
                 with open (datei, "w", encoding="utf-8") as f:
                      json.dump(daten_liste, f, ensure_ascii=False, indent=2)
                 
-                
+                print("Besonderer Ort gespeichert:", daten)
 
                    
                 # Zurücksetzen, damit nicht mehrfach gespeichert wird
                 self.aufenthaltsbeginn = zeitpunkt
+            else:
+             verbleibend = timedelta(minutes=2) - (zeitpunkt - self.aufenthaltsbeginn)
+             print(f"[Debug] Noch nicht lang genug an einem Ort, verbleibend: {verbleibend}")
+            
+    
             
              
         else:
