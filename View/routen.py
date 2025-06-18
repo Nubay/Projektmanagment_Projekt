@@ -51,10 +51,10 @@ class RoutenPage(tk.Frame):
     def add_route_button(self, route_name, command):
         btn = tk.Button(self.routes_button_frame,
                         text=route_name,
-                        font=("Arial", 18, "bold"),
+                        font=("Arial", 20, "bold"),
                         bg="#a0a0a0",
                         activebackground="#808080",
-                        fg="white",
+                        fg="Black",
                         pady=20,
                         command=command)
         btn.pack(side="top", fill="x", pady=5, expand=True)
