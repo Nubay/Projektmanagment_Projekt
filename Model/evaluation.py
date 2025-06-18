@@ -49,9 +49,7 @@ def save_value_daily(value, directory=os.path.join("Model", "JsonDateinTage")):
 
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-gps_daten = [(2.5200, 13.4050), (84.8566, 2.3522), (55.1657, 180.4515)]
 
-save_value_daily(berechne_gps_mittelwert(gps_daten))
 
 
 #Hervorhebung besonderer Orte
@@ -60,6 +58,14 @@ class AufenthaltsortErkennung:
         self.letzter_ort = None
         self.letzte_zeit = None 
         self.aufenthaltsbeginn = None
+
+        #Ordner und Datei für besondere Orte dauerhaft vorbereiten
+        pfad = os.path.join("Model", "JSONBesondereOrte")
+        os.makedirs(pfad,exist_ok=True)
+        datei = os.path.join(pfad ,"besondere_orte.json")
+        if not os.path.exists(datei):
+            with open(datei, "w", encoding="utf-8") as f:
+                json.dump([], indent =2 , ensure_ascii=False)
     
     def entfernung_berechnen(self, coord1, coord2):
         from math import radians,sin,cos,sqrt,atan2
@@ -89,18 +95,18 @@ class AufenthaltsortErkennung:
 
         if distanz < 50:
             
-            if zeitpunkt -self.aufenthaltsbeginn >= timedelta(minutes=2):
+            if zeitpunkt -self.aufenthaltsbeginn >= timedelta(minutes=15):
                 
                 daten = {
                     "lat": self.letzter_ort[0],
                     "lon": self.letzter_ort[1],
                     "name": "Neuer Ort",
-                    "farbe": "braun"
 
                 }
 
-                pfad = os.path.join("Model", "JsonDateinTage")
-                datei = os.path.join(pfad, f"{zeitpunkt.date()}.json")
+                pfad = os.path.join("Model", "JSONBesondereOrte")
+                
+                datei = os.path.join(pfad,"besondere_orte.json")
 
                 if os.path.exists(datei):
                     with open(datei, "r", encoding="utf-8") as f:
@@ -123,11 +129,8 @@ class AufenthaltsortErkennung:
                    
                 # Zurücksetzen, damit nicht mehrfach gespeichert wird
                 self.aufenthaltsbeginn = zeitpunkt
-            else:
-             verbleibend = timedelta(minutes=2) - (zeitpunkt - self.aufenthaltsbeginn)
-             
             
-    
+             
         else:
             self.letzter_ort = aktuelle_position
             self.aufenthaltsbeginn = zeitpunkt
