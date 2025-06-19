@@ -6,6 +6,7 @@ from View.standort import StandortPage
 class Main_Window(tk.Tk):
     def __init__(self):
         super().__init__()
+
         self.active_pages = {}
         self.title("Navigationssystem")
         self.overrideredirect(True)
@@ -31,13 +32,15 @@ class Main_Window(tk.Tk):
     
 
     def show_page(self, page_name):
-        for child in self.container.winfo_children():
-            child.destroy()
+        # Verstecke alle Seiten
+        for page in self.active_pages.values():
+            page.grid_remove()
 
-        # Immer neu erstellen
-        page_class = self.pages[page_name]
-        page = page_class(self.container, self)
-        self.active_pages[page_name] = page
-
-
-        page.grid(row=0, column=0, sticky="nsew")
+        # Seite erstellen, falls noch nicht vorhanden
+        if page_name not in self.active_pages:
+            page_class = self.pages[page_name]
+            page = page_class(self.container, self)
+            self.active_pages[page_name] = page
+            page.grid(row=0, column=0, sticky="nsew")
+        else:
+            self.active_pages[page_name].grid()  # page wieder anzeigen
