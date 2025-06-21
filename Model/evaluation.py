@@ -13,9 +13,6 @@ from typing import List, Tuple
 from Controller.controller import GPSController
 import platform
 from pathlib import Path
-
-
-
 def berechne_gps_mittelwert(gps_daten: List[Tuple[float, float]]) -> Tuple[float, float]:
     if not gps_daten:
         raise ValueError("Die Liste ist nicht gefüllt.")
@@ -239,6 +236,7 @@ def finde_usb_stick_pfad():
     mögliche_pfade = []
 
     if system == 'Windows':
+
         for laufwerk in ['D:', 'E:', 'F:', 'G:', 'H:']:
             if os.path.exists(laufwerk):
                 mögliche_pfade.append(laufwerk)
