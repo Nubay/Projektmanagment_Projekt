@@ -258,29 +258,28 @@ def finde_usb_stick_pfad():
 
 
 
-def lade_und_verarbeite_gps_daten():
-    directory = os.path.join("Model", "JsonDateinTage")
-    dateien = [f for f in os.listdir(directory) if f.endswith(".json")]
+def lade_und_verarbeite_gps_daten(datum_str, self):
+    dateipfad = os.path.join("Model", "JsonDateinTage", f"{datum_str}.json")
 
-    routes = []
+    if not os.path.exists(dateipfad):
+        print(f"Datei nicht gefunden: {dateipfad}")
+        return
 
-    for datei in sorted(dateien, reverse=True):
-        route_name = datei.replace(".json", "")
-        pfad = os.path.join(directory, datei)
-
+    with open(dateipfad, 'r', encoding='utf-8') as f:
         try:
-            with open(pfad, "r", encoding="utf-8") as f:
-                daten = json.load(f)
-            text_lines = []
-            for eintrag in daten:
-                if isinstance(eintrag, list) and len(eintrag) == 2:
-                    lon, lat = eintrag
-                    text_lines.append(f"Längengrad: {lon:.5f}, Breitengrad: {lat:.5f}")
-            route_text = "\n".join(text_lines)
-        except Exception as e:
-            route_text = f"Fehler beim Laden der Route:\n{e}"
+            gps_daten = json.load(f)
+        except json.JSONDecodeError:
+            print(f"Fehler beim Laden der Datei: {dateipfad}")
+            return
 
-        routes.append((route_name, route_text))
+    if not isinstance(gps_daten, list):
+        print("Ungültiges Format: Die JSON-Datei muss eine Liste enthalten.")
+        return
 
-    return routes
+    for eintrag in gps_daten:
+        if isinstance(eintrag, list) and len(eintrag) == 2:
+            lon, lat = eintrag
+            self.controller.submit_data((lon, lat))
+        else:
+            print(f"Ungültiger Eintrag übersprungen: {eintrag}")
 
