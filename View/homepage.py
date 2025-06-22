@@ -101,6 +101,10 @@ class HomePage(tk.Frame):
         self.textfield.insert("end", data + "\n")
         self.textfield.see("end")
         self.textfield.config(state="disabled")
+
+
+
+
         
 
         
