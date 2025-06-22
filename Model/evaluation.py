@@ -258,6 +258,33 @@ def finde_usb_stick_pfad():
 
 
 
+def lade_und_verarbeite_gps_daten(datum_str, self):
+    dateipfad = os.path.join("Model", "JsonDateinTage", f"{datum_str}.json")
+
+    if not os.path.exists(dateipfad):
+        print(f"Datei nicht gefunden: {dateipfad}")
+        return
+
+    with open(dateipfad, 'r', encoding='utf-8') as f:
+        try:
+            gps_daten = json.load(f)
+        except json.JSONDecodeError:
+            print(f"Fehler beim Laden der Datei: {dateipfad}")
+            return
+
+    if not isinstance(gps_daten, list):
+        print("Ungültiges Format: Die JSON-Datei muss eine Liste enthalten.")
+        return
+
+    for eintrag in gps_daten:
+        if isinstance(eintrag, list) and len(eintrag) == 2:
+            lon, lat = eintrag
+            self.controller.submit_data((lon, lat))
+            save_value_daily(lon, lat)
+        else:
+            print(f"Ungültiger Eintrag übersprungen: {eintrag}")
+
+
 def lade_und_verarbeite_gps_daten():
     directory = os.path.join("Model", "JsonDateinTage")
     dateien = [f for f in os.listdir(directory) if f.endswith(".json")]
