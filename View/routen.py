@@ -63,28 +63,21 @@ class RoutenPage(tk.Frame):
 
 
 
-    def lade_alle_routen_und_aktualisiere_buttons(self):
-        directory = os.path.join("Model", "JsonDateinTage")
-        dateien = [f for f in os.listdir(directory) if f.endswith(".json")]
-        
-        # Clear alte Buttons zuerst
+    def update_route_list(self):
+        # Alte Buttons entfernen
         for btn in self.route_buttons:
             btn.destroy()
         self.route_buttons.clear()
 
-        for datei in sorted(dateien, reverse=True):
-            pfad = os.path.join(directory, datei)
-            try:
-                with open(pfad, "r", encoding="utf-8") as f:
-                    daten = json.load(f)
-                    # Beispiel: Name aus Dateiname oder Inhalt ziehen
-                    route_name = datei.replace(".json", "")
-                    # Button hinzufügen
-                    self.add_route_button(route_name, lambda rn=route_name: print(f"Route {rn} ausgewählt"))
-            except Exception as e:
-                print(f"Fehler beim Laden von {datei}: {e}")
-
-
+                # Routen aus Model laden
+        routes = lade_und_verarbeite_gps_daten()
+        
+        for route_name, route_text in routes:
+            def on_click(text=route_text):
+                self.controller.show_page("Routen_Anzeigen_Page")
+                detail_seite = self.controller.active_pages["Routen_Anzeigen_Page"]
+                detail_seite.zeige_route(text)
+            self.add_route_button(route_name, on_click)
 
     def update_route_list(self):
         self.lade_alle_routen_und_aktualisiere_buttons()
