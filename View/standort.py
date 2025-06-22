@@ -92,11 +92,16 @@ class StandortPage(tk.Frame):
         for widget in ort_frame.winfo_children():
             widget.destroy()
 
-        entry = tk.Entry(ort_frame, font=("Arial", 18), bg="#a0a0a0", fg="white", insertbackground="white")
+        # Validation-Funktion für Entry
+        def validate_length(new_text):
+            return len(new_text) <= 70
+
+        vcmd = (ort_frame.register(validate_length), '%P')
+
+        entry = tk.Entry(ort_frame, font=("Arial", 18), bg="#a0a0a0", fg="white", insertbackground="white",
+                        validate='key', validatecommand=vcmd)
         entry.insert(0, ort["name"])
         entry.pack(side="left", fill="x", expand=True, padx=10, pady=20)
-
-        # entry.bind("<FocusIn>", lambda e: subprocess.Popen(["matchbox-keyboard"]))
 
         def speichern():
             ort["name"] = entry.get()
@@ -104,8 +109,12 @@ class StandortPage(tk.Frame):
             self.refresh()
 
         save_btn = tk.Button(ort_frame, text="✅", font=("Arial", 14),
-                     command=speichern, width=5, height=2)
+                            command=speichern, width=5, height=2)
         save_btn.pack(side="right", padx=5, pady=10)
+
+
+
+
 
 
 

@@ -79,6 +79,9 @@ class HomePage(tk.Frame):
         self.textfield.see("end")
         self.textfield.config(state="disabled")
 
+
+
+
         
 
         
