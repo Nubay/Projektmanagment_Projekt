@@ -280,7 +280,6 @@ def lade_und_verarbeite_gps_daten(datum_str, self):
         if isinstance(eintrag, list) and len(eintrag) == 2:
             lon, lat = eintrag
             self.controller.submit_data((lon, lat))
-            save_value_daily(lon, lat)
         else:
             print(f"Ungültiger Eintrag übersprungen: {eintrag}")
 
