@@ -1,12 +1,5 @@
 
 
-
-
-
-
-
-
-
 class Automatikmodus(GPSBackendSignalMessung):
 
     def __init__(self,start,ende,controller=None):
