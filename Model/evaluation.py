@@ -332,8 +332,8 @@ class Automatikmodus(GPSBackendSignalMessung):
             super().stoppe_messung()
 
 track1=Automatikmodus("13:00:01" , "13:00:01")
-track1.starte_automatikmodus()
-track1.beende_automatikmodus()
+#track1.starte_automatikmodus()
+#track1.beende_automatikmodus()
 
 
 class Aufenthaltserkennung(AufenthaltsortErkennung):  
