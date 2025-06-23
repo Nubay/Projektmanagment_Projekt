@@ -4,39 +4,44 @@ from View.Components.buttons import create_buttons, toggle_buttons
 from Model.evaluation import GPSBackendSignalMessung
 import threading
 from Controller.controller import GPSController
-from View.settings_page import SettingsPage
 
 class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
-        self.gps_controller = GPSController(self)
-        self.root_controller = controller
-        self.evaluation = GPSBackendSignalMessung(self.gps_controller)
+        self.controller = GPSController(self)
+        self.evaluation = GPSBackendSignalMessung(self.controller)
         self.gui_controller = controller
-        # Aufteilung der Seite
+
+        #Aufteilung Seite in 2
         self.columnconfigure(0, weight=6)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
 
 
-
-        # Linker Bereich
+        #Aufteilung Linke Seite
         left_frame = tk.Frame(self, bg="white")
         left_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
         left_frame.columnconfigure(0, weight=1)
         left_frame.rowconfigure(1, weight=1)
 
-        label = Label(left_frame, text="Route", font=("Courier", 24))
+
+        #Label + Textfeld
+        label = Label(left_frame, text = "Route")
+        label.config(font = ('Courier', 24))
         label.grid(row=0, column=0, sticky="nsew", padx=5)
 
         self.textfield = Text(left_frame, state="disabled", font=("Courier", 13))
-        self.textfield.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
+        self.textfield.grid(row = 1, column = 0, sticky = "nsew", padx=5, pady = 5)
+
 
         # Quit-Button
-        quit_button = tk.Button(self, text="Quit", width=10, height=2, bg="red", fg="white", command=self.root_controller.destroy)
+        quit_button = tk.Button(self, text="Quit", width=10, height=2, bg="red", fg="white", command=controller.destroy)
         quit_button.place(x=10, y=10)
 
-        # Rechter Bereich (Buttons)
+
+
+        #Aufteilung Rechte Seite
+        #Buttons Rechts
         button_frame = tk.Frame(self, bg="lightgray")
         button_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
 
@@ -44,26 +49,44 @@ class HomePage(tk.Frame):
             button_frame.rowconfigure(i, weight=1)
         button_frame.columnconfigure(0, weight=1)
 
-        # Buttons erzeugen
+
+        # Buttons erstellen
         buttons = create_buttons(button_frame)
 
-        # "Einstellungen"-Button 
-        buttons[0].config(command=self.öffne_einstellungen)
-
-        # "Start"-Button 
-        buttons[-1].config(command=lambda: self.start_stop_action(buttons[-1]))
-
-        # Alle Buttons anzeigen
         for i, btn in enumerate(buttons):
             btn.grid(row=i, column=0, sticky="nsew", padx=10, pady=5)
 
-    def öffne_einstellungen(self):
-        fenster = tk.Toplevel(self)
-        fenster.title("Einstellungen")
-        fenster.state("zoomed")       # Große Fläche
-        fenster.resizable(False, False)
-        seite = SettingsPage(fenster)
-        seite.pack(expand=True, fill="both")
+
+        # Start/Stop-Button
+        start_stop_button = buttons[4]
+        start_stop_button.config( 
+            command=lambda: self.start_stop_action(start_stop_button)
+        )
+
+        # Einstellung Button
+        einstellung_buton = buttons[0]
+        einstellung_buton.config(command=lambda: self.gui_controller.show_page("SettingsPage"))
+
+
+        # Routen Button
+        routen_button = buttons[1]
+        routen_button.config(command=lambda: self.gui_controller.show_page("RoutenPage"))
+
+
+        # Standort Button
+        standort_button = buttons[2]
+        standort_button.config(command=lambda: self.gui_controller.show_page("StandortPage"))
+
+        
+        #Exportieren/Button
+        export_button = buttons[3]
+        export_button.config(command=self.exportieren_action)
+
+    
+    def exportieren_action(self):
+        self.evaluation.exportiere_gruppiert_nach_dateiname()
+
+
 
     def start_stop_action(self, button):
         toggle_buttons(button)
@@ -73,11 +96,17 @@ class HomePage(tk.Frame):
         else:
             self.evaluation.stoppen()
 
+
+
+
     def show_gps_data(self, data):
         self.textfield.config(state="normal")
         self.textfield.insert("end", data + "\n")
         self.textfield.see("end")
         self.textfield.config(state="disabled")
+
+
+
 
         
 

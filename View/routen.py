@@ -1,6 +1,7 @@
 import tkinter as tk
 import os
 import json
+from Model.evaluation import lade_und_verarbeite_gps_daten
 
 
 class RoutenPage(tk.Frame):
@@ -69,16 +70,13 @@ class RoutenPage(tk.Frame):
             btn.destroy()
         self.route_buttons.clear()
 
-                # Routen aus Model laden
+        # Routen aus Model laden
         routes = lade_und_verarbeite_gps_daten()
-        
+
         for route_name, route_text in routes:
             def on_click(text=route_text):
                 self.controller.show_page("Routen_Anzeigen_Page")
                 detail_seite = self.controller.active_pages["Routen_Anzeigen_Page"]
                 detail_seite.zeige_route(text)
-            self.add_route_button(route_name, on_click)
 
-    def update_route_list(self):
-        self.lade_alle_routen_und_aktualisiere_buttons()
-        
+            self.add_route_button(route_name, on_click)

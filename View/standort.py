@@ -92,7 +92,7 @@ class StandortPage(tk.Frame):
         for widget in ort_frame.winfo_children():
             widget.destroy()
 
-                # Validation-Funktion für Entry
+        # Validation-Funktion für Entry
         def validate_length(new_text):
             return len(new_text) <= 70
 
@@ -103,7 +103,6 @@ class StandortPage(tk.Frame):
         entry.insert(0, ort["name"])
         entry.pack(side="left", fill="x", expand=True, padx=10, pady=20)
 
-
         def speichern():
             ort["name"] = entry.get()
             self.save_orte(orte)
@@ -112,6 +111,10 @@ class StandortPage(tk.Frame):
         save_btn = tk.Button(ort_frame, text="✅", font=("Arial", 14),
                             command=speichern, width=5, height=2)
         save_btn.pack(side="right", padx=5, pady=10)
+
+
+
+
 
 
 

@@ -3,6 +3,9 @@ from View.homepage import HomePage
 from View.routen import RoutenPage
 from View.standort import StandortPage
 from View.routen_anzeigen_page import Routen_Anzeigen_Page
+from View.settings_page import SettingsPage
+from View.change_password_page import ChangePasswordPage
+
 
 class Main_Window(tk.Tk):
     def __init__(self):
@@ -27,7 +30,9 @@ class Main_Window(tk.Tk):
             "HomePage": HomePage,
             "RoutenPage": RoutenPage,
             "StandortPage": StandortPage,
-            "Routen_Anzeigen_Page": Routen_Anzeigen_Page
+            "Routen_Anzeigen_Page": Routen_Anzeigen_Page,
+            "SettingsPage": SettingsPage,
+            "ChangePasswordPage": ChangePasswordPage 
         }
         self.show_page("HomePage")
 
