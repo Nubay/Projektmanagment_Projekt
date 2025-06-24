@@ -10,8 +10,9 @@ from Controller.controller import GPSController
 class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
-        self.controller = GPSController(self)
-        self.evaluation = GPSBackendSignalMessung(self.controller)
+        self.gps_controller = GPSController(self)
+        self.root_controller = controller
+        self.evaluation = GPSBackendSignalMessung(self.gps_controller)
         self.gui_controller = controller
         self.running = False
 
@@ -22,30 +23,24 @@ class HomePage(tk.Frame):
         self.rowconfigure(0, weight=1)
 
 
-        #Aufteilung Linke Seite
+
+        # Linker Bereich
         left_frame = tk.Frame(self, bg="white")
         left_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
         left_frame.columnconfigure(0, weight=1)
         left_frame.rowconfigure(1, weight=1)
 
-
-        #Label + Textfeld
-        label = Label(left_frame, text = "Route")
-        label.config(font = ('Courier', 24))
+        label = Label(left_frame, text="Route", font=("Courier", 24))
         label.grid(row=0, column=0, sticky="nsew", padx=5)
 
         self.textfield = Text(left_frame, state="disabled", font=("Courier", 13))
-        self.textfield.grid(row = 1, column = 0, sticky = "nsew", padx=5, pady = 5)
-
+        self.textfield.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
 
         # Quit-Button
-        quit_button = tk.Button(self, text="Quit", width=10, height=2, bg="red", fg="white", command=controller.destroy)
+        quit_button = tk.Button(self, text="Quit", width=10, height=2, bg="red", fg="white", command=self.root_controller.destroy)
         quit_button.place(x=10, y=10)
 
-
-
-        #Aufteilung Rechte Seite
-        #Buttons Rechts
+        # Rechter Bereich (Buttons)
         button_frame = tk.Frame(self, bg="lightgray")
         button_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
 
@@ -53,10 +48,16 @@ class HomePage(tk.Frame):
             button_frame.rowconfigure(i, weight=1)
         button_frame.columnconfigure(0, weight=1)
 
-
-        # Buttons erstellen
+        # Buttons erzeugen
         buttons = create_buttons(button_frame)
 
+        # "Einstellungen"-Button 
+        buttons[0].config(command=self.öffne_einstellungen)
+
+        # "Start"-Button 
+        buttons[-1].config(command=lambda: self.start_stop_action(buttons[-1]))
+
+        # Alle Buttons anzeigen
         for i, btn in enumerate(buttons):
             btn.grid(row=i, column=0, sticky="nsew", padx=10, pady=5)
 
