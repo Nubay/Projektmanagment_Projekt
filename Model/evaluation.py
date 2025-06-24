@@ -5,7 +5,6 @@
 # from gps import gps, WATCH_ENABLE, WATCH_NEWSTYLE 
 import time
 from datetime import datetime 
-
 import json
 import os
 from datetime import datetime
@@ -13,6 +12,9 @@ from typing import List, Tuple
 from Controller.controller import GPSController
 import platform
 from pathlib import Path
+import threading
+import time
+import time as time_module
 
 
 
@@ -143,7 +145,6 @@ class GPSBackendSignalMessung :
         self.daten = []
         self.controller = controller
         self.aufenthaltserkenner = AufenthaltsortErkennung()
-        self.aufenthaltserkenner = AufenthaltsortErkennung()
         #GPS Daten mit Modul
     # def empfange_gps_daten(self):
     #     while True:
@@ -200,6 +201,7 @@ class GPSBackendSignalMessung :
     def StartMessung(self):
         while 1:
             gps_daten = self.starte_messung()
+            time.sleep(4)
             self.controller.submit_data(berechne_gps_mittelwert(gps_daten))
             save_value_daily(berechne_gps_mittelwert(gps_daten))
 
@@ -285,34 +287,83 @@ def lade_und_verarbeite_gps_daten():
     return routes
 
     
-class Automatikmodus(GPSBackendSignalMessung):
+class Automatikmodus:
+    STATUS_DATEI = "automatik_status.json"
 
-    def __init__(self,start,ende,controller=None):
-            self.start= start #Alle Konstruktoren
-            self.ende=ende  
-            super().__init__(controller) 
+    def __init__(self, start_time_str, end_time_str, home_page, automatik_page):
+        self.start_time = datetime.strptime(start_time_str, "%H:%M:%S").time()
+        self.end_time = datetime.strptime(end_time_str, "%H:%M:%S").time()
+        self.home_page = home_page
+        self.automatik_page = automatik_page
+        self.running = False
+        self.started = False
+        
 
-    def empfange_gps_daten(self):
-        import random
-        lat = 80 + random.uniform(-0.0001, 0.0001)
-        lon = 40 + random.uniform(-0.0001, 0.0001)
-        time_gps = datetime.now().isoformat()
-        return (lat, lon, time_gps)
+    def status_speichern(self):
+        status = {
+            "running": self.running,
+            "started": self.started,
+            "start_time": self.start_time.strftime("%H:%M:%S"),
+            "end_time": self.end_time.strftime("%H:%M:%S"),
+        }
+        ordner_pfad = "Model/JSONAutomatikmodus"
+        os.makedirs(ordner_pfad, exist_ok=True)
+        datei_pfad = os.path.join(ordner_pfad, "status.json")
 
-    def starte_automatikmodus(self): #Funktion für den Automatikmodus
-      if self.start == self.ende or self.start>self.ende:#überprüft ob die Eingabe des Users richtig ist
-            raise ValueError("Start-und Endzeit dürfen nicht gleich sein")
-      else: 
-            super().StartMessung() # Das Tracking wird gestartet.Das Super ist eine Vererbung und startet den Prozess 
-            print("Starte tracking",self.start,"bis",self.ende)
-            super().starte_messung()
-    def beende_automatikmodus(self): # Tracking wird beendet
-        if self.start>= self.ende:
-            super().stoppe_messung()
+        with open(datei_pfad, "w", encoding="utf-8") as f:
+            json.dump(status, f, indent=2)
 
-track1=Automatikmodus("13:00:01" , "13:00:01")
-#track1.starte_automatikmodus()
-#track1.beende_automatikmodus()
+    def status_laden(self):
+        if os.path.exists(self.STATUS_DATEI):
+            with open(self.STATUS_DATEI, "r", encoding="utf-8") as f:
+                status = json.load(f)
+                self.running = status.get("running", False)
+                self.started = status.get("started", False)
+                self.start_time = datetime.strptime(status.get("start_time", "00:00:00"), "%H:%M:%S").time()
+                self.end_time = datetime.strptime(status.get("end_time", "23:59:59"), "%H:%M:%S").time()
+                return True
+        return False
+
+
+    def starten(self):
+        self.running = True
+        self.status_speichern()
+        now = datetime.now().time()
+        if self.start_time <= now < self.end_time:
+            self.started = True
+            self.automatik_page.start_tracking_automatisch()
+        self._check_time()
+
+    def beenden(self):
+        self.running = False
+        if self.started:
+            self.home_page.automatisch_stop()
+            self.started = False
+        self.status_speichern()
+
+    def _check_time(self):
+        if not self.running:
+            return
+
+        now = datetime.now().time()
+
+        if not self.started and self.start_time <= now < self.end_time:
+            print("Automatikmodus: Startzeit erreicht, Tracking starten")
+            self.started = True
+            self.automatik_page.start_tracking_automatisch()
+
+        elif self.started and now >= self.end_time:
+            print("Automatikmodus: Endzeit erreicht, Tracking stoppen")
+            self.started = False
+            self.running = False
+            self.automatik_page.stop_tracking_automatisch()
+            return
+
+        self.home_page.after(1000, self._check_time)
+
+
+
+    
 
 
 class Aufenthaltserkennung(AufenthaltsortErkennung):  

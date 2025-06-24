@@ -9,3 +9,5 @@ class GPSController:
             self.homepage.show_gps_data(f"Längengrad: {daten[0]:.5f}, Breitengrad: {daten[1]:.5f}")
         self.homepage.after(0, update_ui)
 
+    
+
