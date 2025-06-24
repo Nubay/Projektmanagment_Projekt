@@ -11,7 +11,7 @@ class SettingsPage(tk.Frame):
         self.rowconfigure((0, 1, 2, 3), weight=1)
 
         # Zurück-Button oben links
-        back_button = tk.Button(self, text="← Zurück", font=("Arial", 14, "bold"), bg="#d3d3d3",
+        back_button = tk.Button(self, text="← Zurück", font=("Arial", 16, "bold"), bg="#d3d3d3",
                                 command=lambda: self.controller.show_page("HomePage"))
         back_button.grid(row=0, column=0, sticky="nw", padx=10, pady=10)
 
@@ -23,7 +23,7 @@ class SettingsPage(tk.Frame):
         # Automatikmodus-Button
         automatik_button = tk.Button(
             self, text="Automatikmodus", font=("Arial", 24, "bold"),
-            bg="#a0a0a0", activebackground="#808080", height=3
+            command=lambda: self.controller.show_page("AutomatikmodusPage"), bg="#a0a0a0", activebackground="#808080", height=3
         )
         automatik_button.grid(row=1, column=0, sticky="nsew", padx=40, pady=20)
 

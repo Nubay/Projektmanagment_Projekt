@@ -5,12 +5,16 @@ from Model.evaluation import GPSBackendSignalMessung
 import threading
 from Controller.controller import GPSController
 
+
+
 class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = GPSController(self)
         self.evaluation = GPSBackendSignalMessung(self.controller)
         self.gui_controller = controller
+        self.running = False
+
 
         #Aufteilung Seite in 2
         self.columnconfigure(0, weight=6)
@@ -56,12 +60,9 @@ class HomePage(tk.Frame):
         for i, btn in enumerate(buttons):
             btn.grid(row=i, column=0, sticky="nsew", padx=10, pady=5)
 
-
-        # Start/Stop-Button
-        start_stop_button = buttons[4]
-        start_stop_button.config( 
-            command=lambda: self.start_stop_action(start_stop_button)
-        )
+        # Start/Stop-Button als Instanzvariable speichern
+        self.start_stop_button = buttons[4]
+        self.start_stop_button.config(command=lambda: self.start_stop_action(self.start_stop_button))
 
         # Einstellung Button
         einstellung_buton = buttons[0]
@@ -92,11 +93,44 @@ class HomePage(tk.Frame):
         toggle_buttons(button)
         if button["text"] == "Stop":
             self.evaluation.stoppe_messung = False
+            print("Messung startet")
             threading.Thread(target=self.evaluation.StartMessung, daemon=True).start()
         else:
             self.evaluation.stoppen()
 
 
+    def automatisch_start(self):
+        if self.start_stop_button["text"] == "Start":
+            self.start_stop_button.config(text="Stop", bg="orange")
+            self.evaluation.stoppe_messung = False
+            threading.Thread(target=self.evaluation.StartMessung, daemon=True).start()
+    
+
+    def automatisch_stop(self):
+        if self.start_stop_button["text"] == "Stop":
+            self.start_stop_button.config(text="Start", bg="green")
+            self.evaluation.stoppen()
+
+
+    def start_tracking(self):
+        print("HomePage.start_tracking() aufgerufen")
+        if not self.running:
+            self.running = True
+            self.automatisch_start()
+
+
+    def stop_tracking(self):
+        if self.running:
+            self.running = False
+            self.automatisch_stop()
+
+
+    def on_start_button_click(self):
+        self.start_tracking()
+
+
+    def on_stop_button_click(self):
+        self.stop_tracking()
 
 
     def show_gps_data(self, data):
