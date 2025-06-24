@@ -51,8 +51,6 @@ class HomePage(tk.Frame):
         # Buttons erzeugen
         buttons = create_buttons(button_frame)
 
-        # "Einstellungen"-Button 
-        buttons[0].config(command=self.öffne_einstellungen)
 
         # "Start"-Button 
         buttons[-1].config(command=lambda: self.start_stop_action(buttons[-1]))
