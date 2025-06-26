@@ -65,18 +65,16 @@ class RoutenPage(tk.Frame):
 
 
     def update_route_list(self):
-        # Alte Buttons entfernen
         for btn in self.route_buttons:
             btn.destroy()
         self.route_buttons.clear()
 
-        # Routen aus Model laden
         routes = lade_und_verarbeite_gps_daten()
 
-        for route_name, route_text in routes:
-            def on_click(text=route_text):
+        for route_name, gps_punkte in routes:
+            def on_click(punkte=gps_punkte):
                 self.controller.show_page("Routen_Anzeigen_Page")
                 detail_seite = self.controller.active_pages["Routen_Anzeigen_Page"]
-                detail_seite.zeige_route(text)
+                detail_seite.zeige_route(punkte)
 
             self.add_route_button(route_name, on_click)

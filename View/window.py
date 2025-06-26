@@ -5,13 +5,26 @@ from View.standort import StandortPage
 from View.routen_anzeigen_page import Routen_Anzeigen_Page
 from View.settings_page import SettingsPage
 from View.change_password_page import ChangePasswordPage
+from View.automatikmodus import AutomatikmodusPage
+
 
 
 class Main_Window(tk.Tk):
     def __init__(self):
         super().__init__()
+        self.container = tk.Frame(self)
+        self.container.grid(row=0, column=0, sticky="nsew")
+
+        self.container.columnconfigure(0, weight=1)
+        self.container.rowconfigure(0, weight=1)
+
+        self.home_page = HomePage(self.container, self)
+        self.automatikmodus_page = AutomatikmodusPage(self.container, self)
+        self.automatikmodus_page.gui_controller = self
+
 
         self.active_pages = {}
+
         self.title("Navigationssystem")
         self.overrideredirect(True)
         self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()}+0+0")
@@ -32,9 +45,17 @@ class Main_Window(tk.Tk):
             "StandortPage": StandortPage,
             "Routen_Anzeigen_Page": Routen_Anzeigen_Page,
             "SettingsPage": SettingsPage,
-            "ChangePasswordPage": ChangePasswordPage 
+            "ChangePasswordPage": ChangePasswordPage,
+            "AutomatikmodusPage": AutomatikmodusPage
         }
+        
+        for name, PageClass in self.pages.items():
+            page = PageClass(self.container, self)
+            self.active_pages[name] = page
+            page.grid(row=0, column=0, sticky="nsew")
+
         self.show_page("HomePage")
+
 
     
 

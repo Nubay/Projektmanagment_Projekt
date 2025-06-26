@@ -23,7 +23,7 @@ class SettingsPage(tk.Frame):
         # Automatikmodus-Button
         automatik_button = tk.Button(
             self, text="Automatikmodus", font=("Arial", 24, "bold"),
-            bg="#a0a0a0", activebackground="#808080", height=3
+            command=lambda: self.controller.show_page("AutomatikmodusPage"),bg="#a0a0a0", activebackground="#808080", height=3
         )
         automatik_button.grid(row=1, column=0, sticky="nsew", padx=40, pady=20)
 

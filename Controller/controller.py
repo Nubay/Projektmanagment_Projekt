@@ -5,7 +5,9 @@ class GPSController:
         self.homepage = homepage
 
     def submit_data(self, daten: Tuple[float, float]):
+        lat, lon = daten
         def update_ui():
-            self.homepage.show_gps_data(f"Längengrad: {daten[0]:.5f}, Breitengrad: {daten[1]:.5f}")
+            self.homepage.map_widget.set_marker(lat, lon)
+            
         self.homepage.after(0, update_ui)
 
