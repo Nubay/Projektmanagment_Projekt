@@ -35,9 +35,20 @@ def berechne_gps_mittelwert(gps_daten: List[Tuple[float, float]]) -> Tuple[float
 def save_value_daily(value, directory=os.path.join("Model", "JsonDateinTage")):
     today = datetime.now().strftime("%Y-%m-%d")
     filename = os.path.join(directory, f"{today}.json")
-    
+
+    # Ordner erstellen, falls nicht vorhanden
     os.makedirs(directory, exist_ok=True)
-    
+
+    # Liste der JSON-Dateien im Verzeichnis holen
+    json_files = [f for f in os.listdir(directory) if f.endswith(".json")]
+
+    # Wenn mehr als oder gleich 100 Dateien vorhanden sind, die älteste löschen
+    if len(json_files) >= 100:
+        full_paths = [os.path.join(directory, f) for f in json_files]
+        oldest_file = min(full_paths, key=os.path.getctime)
+        os.remove(oldest_file)
+
+    # Bestehende Datei laden oder leere Liste erstellen
     if os.path.exists(filename):
         with open(filename, "r", encoding="utf-8") as f:
             try:
@@ -47,8 +58,8 @@ def save_value_daily(value, directory=os.path.join("Model", "JsonDateinTage")):
     else:
         data = []
 
+    # Wert hinzufügen und Datei speichern
     data.append(value)
-
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
