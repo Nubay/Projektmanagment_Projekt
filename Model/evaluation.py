@@ -170,7 +170,13 @@ class GPSBackendSignalMessung :
     #             lon = getattr(report, 'lon', None)
     #             time_gps = getattr(report, 'time', None)
     #             if lat is not None and lon is not None:
+    #                 last_lat = lat 
+    #                 last_lon = lon
+    #                 last_time = time_gps
     #                 return (lat, lon , time_gps)
+    #             else: 
+    #                 self.controller.submit_data('SIGNALVERLUST! Letzter Standort :')
+    #                 return(last_lat, last_lon, last_time)
 
 
 
