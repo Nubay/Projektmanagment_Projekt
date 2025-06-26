@@ -6,47 +6,89 @@ class ChangePasswordPage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
+        self.eingabe = ""
 
         # Layout-Konfiguration
         self.columnconfigure(0, weight=1)
-        for row in range(10):
-            self.rowconfigure(row, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.columnconfigure(2, weight=1)
+        self.rowconfigure(0, weight=0)  # Back + Titel
+        self.rowconfigure(1, weight=0)  # Kreise
+        self.rowconfigure(2, weight=1)  # Buttons
+        self.rowconfigure(3, weight=0)  # Speichern-Button
 
-        # Zurück-Button
+        # Zurück-Button oben links
         back_button = tk.Button(
             self, text="← Zurück", font=("Arial", 16, "bold"), bg="#d3d3d3",
             command=lambda: self.controller.show_page("SettingsPage")
         )
         back_button.grid(row=0, column=0, sticky="nw", padx=10, pady=10)
 
-        # Titel
+        # Titel zentriert
         title = tk.Label(self, text="Passwort ändern", font=("Arial", 32, "bold"))
-        title.grid(row=0, column=0, sticky="n", pady=20)
+        title.grid(row=0, column=0, columnspan=3, sticky="n", pady=20)
 
-        # Label (weniger Abstand nach unten)
-        label = tk.Label(self, text="Neues Passwort (min. 6 Zeichen):", font=("Arial", 24))
-        label.grid(row=2, column=0, pady=(3, 0))
+        # Anzeige der eingegebenen Kreise (6 Stellen)
+        self.kreise = []
+        kreise_frame = tk.Frame(self)
+        kreise_frame.grid(row=1, column=0, columnspan=3, pady=20)
+        for i in range(6):
+            lbl = tk.Label(kreise_frame, text="○", font=("Arial", 28), width=2)
+            lbl.grid(row=0, column=i, padx=8)
+            self.kreise.append(lbl)
 
-        # Eingabefeld (breiter und höher)
-        self.entry = tk.Entry(self, show="*", font=("Arial", 20), width=50,
-                              bg="white", fg="black",
-                              relief="solid", bd=2,
-                              )
-        self.entry.grid(row=3, column=0, pady=(0, 5), ipady=8)  # Mehr Innenhöhe, weniger Abstand unten
+        # Zahlen-Buttons 1-9 in 3x3 Grid
+        button_frame = tk.Frame(self)
+        button_frame.grid(row=2, column=0, columnspan=3)
 
-        # Speichern-Button (etwas höher, weniger Abstand oben)
+        btn_font = ("Arial", 24, "bold")
+        btn_width = 8
+        btn_height = 4
+        btn_bg = "#a0a0a0"
+
+        for i in range(9):
+            btn = tk.Button(button_frame, text=str(i + 1), font=btn_font,
+                            width=btn_width, height=btn_height, bg=btn_bg,
+                            command=lambda n=i + 1: self.zahl_gedrueckt(str(n)))
+            btn.grid(row=i // 3, column=i % 3, padx=8, pady=8)
+
+        # Button 0 in der Mitte unten
+        btn0 = tk.Button(button_frame, text="0", font=btn_font,
+                         width=btn_width, height=btn_height, bg=btn_bg,
+                         command=lambda: self.zahl_gedrueckt("0"))
+        btn0.grid(row=3, column=1, padx=8, pady=8)
+
+        # Löschen-Button rechts unten
+        loeschen_btn = tk.Button(button_frame, text="←", font=btn_font,
+                                 width=btn_width, height=btn_height, bg=btn_bg,
+                                 command=self.loeschen)
+        loeschen_btn.grid(row=3, column=2, padx=8, pady=8)
+
+        # Speichern-Button unten
         speichern_btn = tk.Button(
             self, text="Speichern", command=self.speichern_passwort,
             font=("Arial", 20), width=20, height=2,
             bg="#a0a0a0", activebackground="#808080"
         )
-        speichern_btn.grid(row=4, column=0, pady=(10, 20))  # Oben 10, unten 20
+        speichern_btn.grid(row=3, column=0, columnspan=3, pady=20, sticky="n")
+
+    def zahl_gedrueckt(self, zahl):
+        if len(self.eingabe) < 6:
+            self.eingabe += zahl
+            self.kreise[len(self.eingabe) - 1].config(text="●")
+
+    def loeschen(self):
+        if len(self.eingabe) > 0:
+            self.kreise[len(self.eingabe) - 1].config(text="○")
+            self.eingabe = self.eingabe[:-1]
 
     def speichern_passwort(self):
-        passwort = self.entry.get()
-        if len(passwort) < 6:
-            messagebox.showwarning("Fehler", "Das Passwort muss mindestens 6 Zeichen lang sein.")
+        if len(self.eingabe) != 6:
+            messagebox.showwarning("Fehler", "Das Passwort muss 6 Zeichen lang sein.")
             return
-        speichere_passwort(passwort)
+        speichere_passwort(self.eingabe)
         messagebox.showinfo("Erfolg", "Passwort gespeichert!")
-        self.entry.delete(0, tk.END)
+        self.eingabe = ""
+        for lbl in self.kreise:
+            lbl.config(text="○")
+

@@ -11,3 +11,8 @@ class GPSController:
             
         self.homepage.after(0, update_ui)
 
+    def show_password_check_page(self, zielseite):
+        self.password_check_page.set_weiterleitungsziel(zielseite)
+        self.show_page("PasswordCheckPage")
+
+

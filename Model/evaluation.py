@@ -121,13 +121,16 @@ class AufenthaltsortErkennung:
                 else:
                      daten_liste = []
 
-                 #Besonderer Ort hinzufügen 
-                daten_liste.append(daten)
+                bereits_vorhanden = any(
+                self.entfernung_berechnen((ort["lat"], ort["lon"]), self.letzter_ort) < 5
+                for ort in daten_liste
+                )
 
-                with open (datei, "w", encoding="utf-8") as f:
-                     json.dump(daten_liste, f, ensure_ascii=False, indent=2)
-                
-                
+                if not bereits_vorhanden:
+                 #Besonderer Ort hinzufügen 
+                    daten_liste.append(daten)
+                    with open (datei, "w", encoding="utf-8") as f:
+                        json.dump(daten_liste, f, ensure_ascii=False, indent=2)    
 
                    
                 # Zurücksetzen, damit nicht mehrfach gespeichert wird
@@ -137,6 +140,7 @@ class AufenthaltsortErkennung:
         else:
             self.letzter_ort = aktuelle_position
             self.aufenthaltsbeginn = zeitpunkt
+
 
 
 class GPSBackendSignalMessung :
@@ -162,8 +166,8 @@ class GPSBackendSignalMessung :
         # Dummy GPS Daten
     def empfange_gps_daten(self):
         import random
-        lat = 50.58815615354921 + random.uniform(-0.001, 0.001)
-        lon = 7.2047427345133 + random.uniform(-0.001, 0.001)
+        lat = 50.58815615354921 + random.uniform(-0.00001, 0.00001)
+        lon = 7.2047427345133 + random.uniform(-0.00001, 0.00001)
         time_gps = datetime.now().isoformat()
         return (lat, lon, time_gps)
 

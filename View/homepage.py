@@ -8,6 +8,9 @@ from View.Components.map import MapWidget
 
 
 
+
+
+
 class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
@@ -16,6 +19,7 @@ class HomePage(tk.Frame):
         self.evaluation = GPSBackendSignalMessung(self.gps_controller)
         self.gui_controller = controller
         self.running = False
+
 
 
         #Aufteilung Seite in 2
@@ -65,13 +69,21 @@ class HomePage(tk.Frame):
         for i, btn in enumerate(buttons):
             btn.grid(row=i, column=0, sticky="nsew", padx=10, pady=5)
 
+
         # Start/Stop-Button als Instanzvariable speichern
         self.start_stop_button = buttons[4]
         self.start_stop_button.config(command=lambda: self.start_stop_action(self.start_stop_button))
 
+
+        def oeffne_settings_mit_passwort():
+            self.gui_controller.active_pages["PasswortPage"].set_weiterleitungsziel("SettingsPage")
+            self.gui_controller.show_page("PasswortPage")
+            
+
+
         # Einstellung Button
-        einstellung_buton = buttons[0]
-        einstellung_buton.config(command=lambda: self.gui_controller.show_page("SettingsPage"))
+        einstellung_button = buttons[0]
+        einstellung_button.config(command=oeffne_settings_mit_passwort)
 
 
         # Routen Button

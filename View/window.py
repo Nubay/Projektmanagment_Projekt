@@ -6,6 +6,7 @@ from View.routen_anzeigen_page import Routen_Anzeigen_Page
 from View.settings_page import SettingsPage
 from View.change_password_page import ChangePasswordPage
 from View.automatikmodus import AutomatikmodusPage
+from View.passwortPage import PasswortPage
 
 
 
@@ -21,6 +22,15 @@ class Main_Window(tk.Tk):
         self.home_page = HomePage(self.container, self)
         self.automatikmodus_page = AutomatikmodusPage(self.container, self)
         self.automatikmodus_page.gui_controller = self
+
+
+        #Inaktivität
+        self.inaktivitaets_timer = None
+        self.inaktivitaets_limit = 60_000  # 60 Sekunden
+        self.bind_all("<Any-KeyPress>", self.reset_inaktivitaet)
+        self.bind_all("<Any-Button>", self.reset_inaktivitaet)
+        self.bind_all("<Motion>", self.reset_inaktivitaet)
+        self.reset_inaktivitaet()
 
 
         self.active_pages = {}
@@ -46,7 +56,8 @@ class Main_Window(tk.Tk):
             "Routen_Anzeigen_Page": Routen_Anzeigen_Page,
             "SettingsPage": SettingsPage,
             "ChangePasswordPage": ChangePasswordPage,
-            "AutomatikmodusPage": AutomatikmodusPage
+            "AutomatikmodusPage": AutomatikmodusPage,
+            "PasswortPage": PasswortPage
         }
         
         for name, PageClass in self.pages.items():
@@ -71,4 +82,19 @@ class Main_Window(tk.Tk):
             self.active_pages[page_name] = page
             page.grid(row=0, column=0, sticky="nsew")
         else:
-            self.active_pages[page_name].grid()  # page wieder anzeigen
+            self.active_pages[page_name].grid()
+
+        # Zustand der PasswortPage zurücksetzen
+        if page_name == "PasswortPage":
+            self.active_pages["PasswortPage"].zuruecksetzen()
+
+
+    def reset_inaktivitaet(self, event=None):
+        if self.inaktivitaets_timer:
+            self.after_cancel(self.inaktivitaets_timer)
+        self.inaktivitaets_timer = self.after(self.inaktivitaets_limit, self.sperre_durch_inaktivitaet)
+
+    def sperre_durch_inaktivitaet(self):
+        print("Inaktivität → Passwort-Sperre aktiv")
+        self.active_pages["PasswortPage"].set_weiterleitungsziel("HomePage")
+        self.show_page("PasswortPage")
