@@ -72,15 +72,20 @@ class StandortPage(tk.Frame):
             label = tk.Label(ort_frame, text=f"{ort_name}", anchor="w", font=("Arial", 20, "bold"), bg="#a0a0a0")
             label.pack(side="left", padx=10, pady=20, expand=True, fill="x")
 
-            delete_btn = tk.Button(ort_frame, text="❌", font=("Arial", 14),
-                                   width=5, height=2,
-                                   command=lambda i=idx: self.loesche_ort(i))
+            delete_btn = tk.Button(
+                ort_frame, text="❌", font=("Arial", 20),
+                width=6, height=2,
+                command=lambda i=idx: self.loesche_ort(i)
+            )
             delete_btn.pack(side="right", padx=5, pady=10)
 
-            edit_btn = tk.Button(ort_frame, text="✏️", font=("Arial", 14),
-                                 width=5, height=2,
-                                 command=lambda i=idx: self.umbenennen(i))
+            edit_btn = tk.Button(
+                ort_frame, text="✏️", font=("Arial", 20),
+                width=6, height=2,
+                command=lambda i=idx: self.umbenennen(i)
+            )
             edit_btn.pack(side="right", padx=5, pady=10)
+
 
 
 

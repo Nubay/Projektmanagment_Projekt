@@ -5,7 +5,7 @@ from Model.evaluation import GPSBackendSignalMessung
 import threading
 from Controller.controller import GPSController
 from View.Components.map import MapWidget
-
+from View.Components.bestätigung import ConfirmationDialog
 
 
 
@@ -23,7 +23,7 @@ class HomePage(tk.Frame):
 
 
         #Aufteilung Seite in 2
-        self.columnconfigure(0, weight=1)
+        self.columnconfigure(0, weight=9)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
 
@@ -36,19 +36,25 @@ class HomePage(tk.Frame):
         left_frame.rowconfigure(1, weight=1)
   
 
-        self.map_widget = MapWidget(left_frame, width=6*256, height=5*256,
-                                    start_lat=50.589, start_lon=7.206, zoom=14)
-        self.map_widget.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
+        self.map_widget = MapWidget(left_frame, 
+                            start_lat=50.589, start_lon=7.206, zoom=14)
+        self.map_widget.grid(row=1, column=0, sticky="nsew")
+        left_frame.rowconfigure(1, weight=1)
+        left_frame.columnconfigure(0, weight=1)
 
 
 
         # self.textfield = Text(left_frame, state="disabled", font=("Courier", 13))
         # self.textfield.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
 
+        def quit_action():
+            ConfirmationDialog(self, message="App wirklich beenden?", on_confirm=self.root_controller.destroy)
+
 
         # Quit-Button
-        quit_button = tk.Button(self, text="Quit", width=10, height=2, bg="red", fg="white", command=self.root_controller.destroy)
+        quit_button = tk.Button(self, text="Quit", width=10, height=2, bg="red", fg="white", command=quit_action)
         quit_button.place(x=10, y=10)
+
 
         # Rechter Bereich (Buttons)
         button_frame = tk.Frame(self, bg="lightgray")
@@ -102,7 +108,7 @@ class HomePage(tk.Frame):
 
     
     def exportieren_action(self):
-        self.evaluation.exportiere_gruppiert_nach_dateiname()
+        self.evaluation.exportiere_gruppiert_nach_dateiname(self)
 
 
 
@@ -127,6 +133,7 @@ class HomePage(tk.Frame):
         if self.start_stop_button["text"] == "Stop":
             self.start_stop_button.config(text="Start", bg="green")
             self.evaluation.stoppen()
+
 
 
     def start_tracking(self):

@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 from Controller.passwort_controller import speichere_passwort
+from View.Components.benachrichtigung import NotificationDialog
+
 
 class ChangePasswordPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -84,10 +86,15 @@ class ChangePasswordPage(tk.Frame):
 
     def speichern_passwort(self):
         if len(self.eingabe) != 6:
-            messagebox.showwarning("Fehler", "Das Passwort muss 6 Zeichen lang sein.")
+            NotificationDialog(self, message="Passwort muss 6 Zeichen lang sein.")
             return
-        speichere_passwort(self.eingabe)
-        messagebox.showinfo("Erfolg", "Passwort gespeichert!")
+        try:
+            speichere_passwort(self.eingabe)
+            NotificationDialog(self, message="Passwort erfolgreich gespeichert!")
+        except Exception as e:
+            NotificationDialog(self, message="Passwort konnte nicht gespeichert werden.")
+            print("Fehler beim Speichern:", e)
+
         self.eingabe = ""
         for lbl in self.kreise:
             lbl.config(text="○")

@@ -15,6 +15,7 @@ from pathlib import Path
 import threading
 import time
 import time as time_module
+from View.Components.benachrichtigung import NotificationDialog
 
 
 
@@ -224,7 +225,7 @@ class GPSBackendSignalMessung :
 
 
     @staticmethod
-    def exportiere_gruppiert_nach_dateiname(export_dateiname='vereint.json'):
+    def exportiere_gruppiert_nach_dateiname(parent, export_dateiname='vereint.json'):
         base_dir = os.path.dirname(os.path.abspath(__file__)) 
         quellordner = os.path.join(base_dir, 'JsonDateinTage')
         gesammelte_daten = {}
@@ -239,12 +240,14 @@ class GPSBackendSignalMessung :
                         if isinstance(daten, list):
                             gesammelte_daten[dateiname] = daten
                     except json.JSONDecodeError:
+                        NotificationDialog(parent, message="Fehler beim Laden!")
                         print(f"Fehler beim Laden von {pfad}")
 
         # 2. USB-Stick-Pfad suchen
         usb_pfad = finde_usb_stick_pfad()
         if not usb_pfad:
             print("Kein USB-Stick gefunden.")
+            NotificationDialog(parent, message="Kein USB-Stick gefunden!")
             return
 
         export_pfad = os.path.join(usb_pfad, export_dateiname)
@@ -252,6 +255,7 @@ class GPSBackendSignalMessung :
         # 3. Exportieren
         with open(export_pfad, 'w', encoding='utf-8') as f:
             json.dump(gesammelte_daten, f, indent=2)
+        NotificationDialog(parent, message="Daten erfolgreich exportiert!")
         print(f"Daten erfolgreich exportiert nach: {export_pfad}")
 
 
